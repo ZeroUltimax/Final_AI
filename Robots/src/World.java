@@ -1,25 +1,27 @@
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 
 public class World {
-
 	
-	private ArrayList<WorldNode> nodes;
+	private ArrayList<Node> nodes;
 
-	public WorldNode getEdge(int id) {
-		return null;
+	private TreeMap<Robot,Node> robotPositions;
+	
+	public Node getNode(int id) {
+		return nodes.get(id);
 	}
 	
 	public World duplicate(){
 		World result = new World();
 		
 		// Start by creating empty nodes
-		for(WorldNode n:nodes){
-			result.nodes.add(new WorldNode(n.getId(),n.getDegree()));
+		for(Node n:nodes){
+			result.nodes.add(new Node(n.getId(),n.getDegree()));
 		}
 		
 		// Clone the edges into the result world
-		for(WorldNode n:nodes){
+		for(Node n:nodes){
 			for(Edge e:n.getEdges()){
 				e.cloneToWorld(result); // The new edge binds automatically
 			}

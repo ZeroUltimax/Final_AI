@@ -1,15 +1,13 @@
-import java.util.ArrayList;
 
-public class WorldNode {
+public class Node {
 
 	private int worldId;
 
 	private Edge[] edges;
 
-	WorldNode(int worldId, int degree) {
+	Node(int worldId, int degree) {
 		this.worldId = worldId;
 		edges = new Edge[degree];
-
 	}
 
 	public int getId() {
