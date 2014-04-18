@@ -1,17 +1,17 @@
 
 public class Node {
 
-	private int worldId;
+	private int Id;
 
 	private Edge[] edges;
 
-	Node(int worldId, int degree) {
-		this.worldId = worldId;
-		edges = new Edge[degree];
+	Node(int Id, int degree) {
+		this.Id = Id;
+		this.edges = new Edge[degree];
 	}
 
 	public int getId() {
-		return worldId;
+		return Id;
 	}
 
 	public void setEdge(Edge e, int position) {
@@ -26,4 +26,12 @@ public class Node {
 		return edges;
 	}
 
+	
+	public Node getParent(){
+		if(this.Id==0){
+			return null; // Root of the graph
+		}else{
+			return edges[0].traverse(this); // Traverse edge 0 to go to parent
+		}
+	}
 }
