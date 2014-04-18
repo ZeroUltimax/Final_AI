@@ -6,13 +6,18 @@ public class World {
 	
 	private ArrayList<Node> nodes;
 
-	private TreeMap<Robot,Node> robotPositions;
+	private TreeMap<Robot,Integer> robotNodeId; // Id of the nodes for each robot
+	
+	public  World(){
+		throw new UnsupportedOperationException();
+	}
 	
 	public Node getNode(int id) {
 		return nodes.get(id);
 	}
 	
 	public World duplicate(){
+
 		World result = new World();
 		
 		// Start by creating empty nodes
@@ -27,7 +32,23 @@ public class World {
 			}
 		}
 		
+		
+		// Copy the mapping for the robot
+		result.robotNodeId = new TreeMap<Robot,Integer>(this.robotNodeId);
+		
 		return result;
 		
 	} 
+
+	public Node getNode(Robot r){
+		return nodes.get(robotNodeId.get(r));
+	}
+
+	public void addNode(int nodeDegree, Node parentNode) {
+		throw new UnsupportedOperationException();
+	}
+	
+	private int nextNodeId(){
+		return nodes.size();
+	}
 }
