@@ -1,5 +1,5 @@
 
-public class BadEdgeException extends Exception {
+public class BadEdgeException extends RuntimeException {
 
 	public BadEdgeException() {
 		// TODO Auto-generated constructor stub
