@@ -20,10 +20,9 @@ public class Edge {
 		BPosition = -1;
 	}
 
-	private Edge(Node a, int aPosition, Node b, int bPosition,
-			State state) {
+	private Edge(Node a, int aPosition, Node b, int bPosition, State state) {
 
-		//Ensure a's ID is always lower than b's
+		// Ensure a's ID is always lower than b's
 		if (a.getId() > b.getId()) {
 			Node tmp = a;
 			a = b;
@@ -41,21 +40,25 @@ public class Edge {
 		return n == A;
 	}
 
-	static Edge fuse(Edge left, Edge right, boolean isCross){
-		if (left.state==State.Open || right.state==State.Open) {
-			// Trying to fuse edges that are not open (both left and right are taken)
+	public static Edge fuse(Edge left, Edge right, boolean isCross) {
+		if (left.state == State.Open || right.state == State.Open) {
+			// Trying to fuse edges that are not open (both left and right are
+			// taken)
 			throw new BadEdgeException("Fusing non-open edges");
 		}
 
 		return new Edge(left.A, left.APosition, right.A, right.APosition,
-				isCross ? State.Crossing : State.Main); // Set new edge as either crossing or main edge
+				isCross ? State.Crossing : State.Main); // Set new edge as
+														// either crossing or
+														// main edge
 
 	}
 
-	// Clone an edge to a new world view. World w is needed so that the edge links between the nodes of that world.
+	// Clone an edge to a new world view. World w is needed so that the edge
+	// links between the nodes of that world.
 	public Edge cloneToWorld(World w) {
-		Edge result = new Edge(
-				w.getNode(A.getId()), A.getId(), // Link to node A of w 
+		Edge result = new Edge(w.getNode(A.getId()), A.getId(), // Link to node
+																// A of w
 				w.getNode(B.getId()), B.getId(), // Link to node B of w
 				state);
 
@@ -66,13 +69,18 @@ public class Edge {
 	}
 
 	public Node traverse(Node node) {
-		if(node==A){
+		if (node == A) {
 			return B;
-		}else if(node==B){
+		} else if (node == B) {
 			return A;
-		}else{
-			throw new BadEdgeException("Traversing from node that is not an endpoint");
+		} else {
+			throw new BadEdgeException(
+					"Traversing from node that is not an endpoint");
 		}
-		
+
+	}
+
+	public boolean isOpen() {
+		return state == State.Open;
 	}
 }
