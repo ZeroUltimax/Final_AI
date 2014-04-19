@@ -8,6 +8,11 @@ public class Hypothesis {
 
 	private World worldState; // The hypothesised state of the world
 
+	public Hypothesis(World worldState) {
+		this.worldState = worldState;
+		this.subHypotheses = null; // Start as root node
+	}
+
 	public void expand(int nodeDegree, Robot movingRobot) {
 
 		if (!this.isLeaf()) {
@@ -15,24 +20,32 @@ public class Hypothesis {
 			throw new BadHypothesisException();
 		}
 
+		subHypotheses = new LinkedList<Hypothesis>();
+
 		{
 			// Create unconnected hypothesis first
 			World unconnected = worldState.duplicate();
-			unconnected.addNode(nodeDegree,unconnected.getNode(movingRobot));
+			Node newNode = unconnected.addNode(nodeDegree,
+					unconnected.getNode(movingRobot));
+			unconnected.moveRobot(movingRobot, newNode);
+			subHypotheses.add(new Hypothesis(unconnected));
 		}
-		
-		
 
-		// Expand to valid closeable nodes loops
-		// One hypothesis per nodes even if multiple edges are open
+		for (Node n : worldState.getOpenNodes(nodeDegree,
+				worldState.getNode(movingRobot))) {
+			World connected = worldState.duplicate();
+			Node moveNode = connected.getNode(n.getId());
+			Node startNode = connected.getNode(movingRobot);
 
-		// ** Robot doesnt move back to it's starting node
+			startNode.crossTo(moveNode);
+			connected.moveRobot(movingRobot, moveNode);
+
+			subHypotheses.add(new Hypothesis(connected));
+		}
 	}
 
-	public boolean validate(Robot r1, Robot r2, boolean meet /*
-															 * if r1 is supposed
-															 * to see r2
-															 */) {
+	// meet is if r1 is supposed to see r2
+	public boolean validate(Robot r1, Robot r2, boolean meet) {
 
 		if (this.isLeaf()) {
 			// Return if (r1 sees r2) is in accordance with meet
