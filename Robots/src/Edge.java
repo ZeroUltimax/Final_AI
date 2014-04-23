@@ -1,16 +1,18 @@
 public class Edge {
 
 	private enum State {
-		Unverified, Main, Crossing,
+		Open, // Does not have an attached ending point
+		Main, // Is part of the main branch
+		Crossing // Crosses between branches
 	}
 
 	private State state;
 
-	private WorldNode A, B;
+	private Node A, B;
 	private int APosition, BPosition;
 
-	public Edge(WorldNode start, int startPosition) {
-		state = State.Unverified;
+	public Edge(Node start, int startPosition) {
+		state = State.Open;
 
 		A = start;
 		B = null;
@@ -18,11 +20,11 @@ public class Edge {
 		BPosition = -1;
 	}
 
-	private Edge(WorldNode a, int aPosition, WorldNode b, int bPosition,
-			State state) {
+	private Edge(Node a, int aPosition, Node b, int bPosition, State state) {
 
+		// Ensure a's ID is always lower than b's
 		if (a.getId() > b.getId()) {
-			WorldNode tmp = a;
+			Node tmp = a;
 			a = b;
 			b = tmp;
 		}
@@ -34,31 +36,51 @@ public class Edge {
 		BPosition = bPosition;
 	}
 
-	public boolean isStart(WorldNode n) {
+	public boolean isStart(Node n) {
 		return n == A;
 	}
 
-	static Edge fuse(Edge left, Edge right, boolean isCross)
-			throws BadEdgeException {
-		if (left.B != null || right.B != null) {
-			throw new BadEdgeException();
+	public static Edge fuse(Edge left, Edge right, boolean isCross) {
+		if (left.state == State.Open || right.state == State.Open) {
+			// Trying to fuse edges that are not open (both left and right are
+			// taken)
+			throw new BadEdgeException("Fusing non-open edges");
 		}
 
 		return new Edge(left.A, left.APosition, right.A, right.APosition,
-				isCross ? State.Crossing : State.Main);
+				isCross ? State.Crossing : State.Main); // Set new edge as
+														// either crossing or
+														// main edge
 
 	}
 
+	// Clone an edge to a new world view. World w is needed so that the edge
+	// links between the nodes of that world.
 	public Edge cloneToWorld(World w) {
-		Edge result = new Edge(w.getEdge(A.getId()), A.getId(), w.getEdge(B
-					.getId()), B.getId(), state);
-
+		Edge result = new Edge(w.getNode(A.getId()), A.getId(), // Link to node
+																// A of w
+				w.getNode(B.getId()), B.getId(), // Link to node B of w
+				state);
 
 		result.A.setEdge(result, APosition);
 		result.B.setEdge(result, BPosition);
 
 		return result;
+	}
+
+	public Node traverse(Node node) {
+		if (node == A) {
+			return B;
+		} else if (node == B) {
+			return A;
+		} else {
+			throw new BadEdgeException(
+					"Traversing from node that is not an endpoint");
+		}
 
 	}
 
+	public boolean isOpen() {
+		return state == State.Open;
+	}
 }
